@@ -6,10 +6,16 @@ import (
 )
 
 type Router struct {
-	App             *gin.Engine
-	HelloController *controller.HelloController
+	App            *gin.Engine
+	UserController *controller.UserController
 }
 
 func (r *Router) Setup() {
-	r.App.GET("/", r.HelloController.Hello)
+	r.App.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Welcome to Ecom API",
+		})
+	})
+
+	r.App.POST("/api/users", r.UserController.Register)
 }
