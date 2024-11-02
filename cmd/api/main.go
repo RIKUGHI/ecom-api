@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func main() {
 
 	log.Printf("🚀 Server is listening on port %d", viper.GetInt("PORT"))
 
-	if err := app.Run(); err != nil {
+	if err := app.Run(fmt.Sprintf(":%d", viper.GetInt("PORT"))); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
