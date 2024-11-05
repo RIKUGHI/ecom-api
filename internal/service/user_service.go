@@ -72,3 +72,31 @@ func (s *UserService) Create(c *gin.Context, request *model.RegisterUserRequest)
 
 	return converter.UserToResponse(user), nil
 }
+
+func (s *UserService) Login(c *gin.Context, request *model.LoginUserRequest) (*model.UserResponse, error) {
+	user, err := s.UserRepository.FindByEmail(s.DB, request.Email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		s.Log.Warnf("Failed to get email user from database : %+v", err)
+		return nil, util.ErrInternalServer
+	}
+
+	if user == nil {
+		s.Log.Warnf("User not found : %+v", err)
+		return nil, util.ErrUserNotFound
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
+		s.Log.Warnf("Failed to compare user password with bcrype hash : %+v", err)
+		return nil, util.ErrUnauthorized
+	}
+
+	token, err := util.CreateJWT("secret", user.ID)
+	if err != nil {
+		s.Log.Warnf("Failed to create jwt token : %+v", err)
+		return nil, util.ErrInternalServer
+	}
+
+	user.Token = token
+
+	return converter.UserToResponse(user), nil
+}

@@ -19,4 +19,6 @@ var (
 	ErrUserExists     = &ApiError{Err: errors.New("User already exists"), Code: http.StatusConflict}
 	ErrPasswordHash   = &ApiError{Err: errors.New("Failed to generate bcrypt hash"), Code: http.StatusInternalServerError}
 	ErrCreateUser     = &ApiError{Err: errors.New("Failed to create user in database"), Code: http.StatusInternalServerError}
+	ErrUserNotFound   = &ApiError{Err: errors.New("User not found"), Code: http.StatusNotFound}
+	ErrUnauthorized   = &ApiError{Err: errors.New("Unauthorized"), Code: http.StatusUnauthorized}
 )

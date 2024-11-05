@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/rikughi/ecom-api/internal/model"
 	"github.com/rikughi/ecom-api/internal/service"
 	"github.com/rikughi/ecom-api/internal/util"
@@ -25,27 +22,43 @@ func NewUserController(logger *logrus.Logger, userService *service.UserService) 
 	}
 }
 
+func (c *UserController) Login(ctx *gin.Context) {
+	request := new(model.LoginUserRequest)
+
+	if err := ctx.ShouldBindJSON(request); err != nil {
+		util.HandleValidationErrors(ctx, err)
+		return
+	}
+
+	response, err := c.UserService.Login(ctx, request)
+	if err != nil {
+		apiErr, ok := err.(*util.ApiError)
+		if ok {
+			c.Log.Warnf("Failed to login user: %+v", apiErr)
+			ctx.JSON(apiErr.Code, model.ApiResponse[*model.UserResponse]{
+				Data:   response,
+				Errors: apiErr.Error(),
+			})
+		} else {
+			c.Log.Warnf("Failed to login user: %+v", err)
+			ctx.JSON(http.StatusInternalServerError, model.ApiResponse[*model.UserResponse]{
+				Data:   response,
+				Errors: err.Error(),
+			})
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, model.ApiResponse[*model.UserResponse]{
+		Data: response,
+	})
+}
+
 func (c *UserController) Register(ctx *gin.Context) {
 	request := new(model.RegisterUserRequest)
 
 	if err := ctx.ShouldBindJSON(request); err != nil {
-		if errs, ok := err.(validator.ValidationErrors); ok {
-			validationErrors := make(map[string]string)
-
-			for _, fieldError := range errs {
-				key := strings.ToLower(string(fieldError.Field()[0])) + fieldError.Field()[1:]
-				validationErrors[key] = fmt.Sprintf("Field %s: %s", fieldError.Field(), fieldError.Tag())
-			}
-
-			ctx.JSON(http.StatusBadRequest, model.ApiResponse[*model.UserResponse]{
-				Errors: validationErrors,
-			})
-		} else {
-			ctx.JSON(http.StatusBadRequest, model.ApiResponse[*model.UserResponse]{
-				Errors: err.Error(),
-			})
-		}
-
+		util.HandleValidationErrors(ctx, err)
 		return
 	}
 

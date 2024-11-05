@@ -11,5 +11,6 @@ func UserToResponse(user *entity.User) *model.UserResponse {
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		CreatedAt: user.CreatedAt,
+		Token:     user.Token,
 	}
 }

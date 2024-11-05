@@ -9,6 +9,7 @@ type User struct {
 	Email     string    `gorm:"column:email"`
 	Password  string    `gorm:"column:password"`
 	CreatedAt time.Time `gorm:"column:createdAt;autoCreateTime"`
+	Token     string    `gorm:"-"`
 }
 
 func (u *User) TableName() string {

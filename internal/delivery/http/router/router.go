@@ -18,4 +18,5 @@ func (r *Router) Setup() {
 	})
 
 	r.App.POST("/api/users", r.UserController.Register)
+	r.App.POST("/api/users/_login", r.UserController.Login)
 }

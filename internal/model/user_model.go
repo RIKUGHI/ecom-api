@@ -10,6 +10,11 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type LoginUserRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
 type RegisterUserRequest struct {
 	FirstName string `json:"firstName" binding:"required"`
 	LastName  string `json:"lastName" binding:"required"`
