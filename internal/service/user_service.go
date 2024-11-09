@@ -87,7 +87,7 @@ func (s *UserService) Login(c *gin.Context, request *model.LoginUserRequest) (*m
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
 		s.Log.Warnf("Failed to compare user password with bcrype hash : %+v", err)
-		return nil, util.ErrUnauthorized
+		return nil, util.ErrInvalidCreds
 	}
 
 	token, err := util.CreateJWT("secret", user.ID)
@@ -97,6 +97,23 @@ func (s *UserService) Login(c *gin.Context, request *model.LoginUserRequest) (*m
 	}
 
 	user.Token = token
+
+	return converter.UserToResponse(user), nil
+}
+
+func (s *UserService) Current(c *gin.Context, request *model.GetUserRequest) (*model.UserResponse, error) {
+	user := new(entity.User)
+
+	err := s.UserRepository.FindById(s.DB, user, request.ID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		s.Log.Warnf("Failed to get user from database : %+v", err)
+		return nil, util.ErrInternalServer
+	}
+
+	if user.ID == 0 {
+		s.Log.Warnf("User not found : %+v", err)
+		return nil, util.ErrUserNotFound
+	}
 
 	return converter.UserToResponse(user), nil
 }

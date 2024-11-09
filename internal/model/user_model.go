@@ -21,3 +21,7 @@ type RegisterUserRequest struct {
 	Email     string `json:"email" binding:"required,email"`
 	Password  string `json:"password" binding:"required,min=3,max=130"`
 }
+
+type GetUserRequest struct {
+	ID string `json:"id" validate:"required,max=100"`
+}

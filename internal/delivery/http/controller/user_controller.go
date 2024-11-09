@@ -32,20 +32,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 
 	response, err := c.UserService.Login(ctx, request)
 	if err != nil {
-		apiErr, ok := err.(*util.ApiError)
-		if ok {
-			c.Log.Warnf("Failed to login user: %+v", apiErr)
-			ctx.JSON(apiErr.Code, model.ApiResponse[*model.UserResponse]{
-				Data:   response,
-				Errors: apiErr.Error(),
-			})
-		} else {
-			c.Log.Warnf("Failed to login user: %+v", err)
-			ctx.JSON(http.StatusInternalServerError, model.ApiResponse[*model.UserResponse]{
-				Data:   response,
-				Errors: err.Error(),
-			})
-		}
+		util.HandleApiError(ctx, err, "Failed to login user: %+v", c.Log)
 		return
 	}
 
@@ -64,20 +51,32 @@ func (c *UserController) Register(ctx *gin.Context) {
 
 	response, err := c.UserService.Create(ctx, request)
 	if err != nil {
-		apiErr, ok := err.(*util.ApiError)
-		if ok {
-			c.Log.Warnf("Failed to register user: %+v", apiErr)
-			ctx.JSON(apiErr.Code, model.ApiResponse[*model.UserResponse]{
-				Data:   response,
-				Errors: apiErr.Error(),
-			})
-		} else {
-			c.Log.Warnf("Failed to register user: %+v", err)
-			ctx.JSON(http.StatusInternalServerError, model.ApiResponse[*model.UserResponse]{
-				Data:   response,
-				Errors: err.Error(),
-			})
-		}
+		util.HandleApiError(ctx, err, "Failed to register user: %+v", c.Log)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, model.ApiResponse[*model.UserResponse]{
+		Data: response,
+	})
+}
+
+func (c *UserController) Current(ctx *gin.Context) {
+	authUserID := util.GetUserID(ctx)
+	if authUserID == "" {
+		c.Log.Warnf("userID is required")
+		ctx.JSON(http.StatusUnauthorized, model.ApiResponse[*model.UserResponse]{
+			Errors: "Unauthorized",
+		})
+		return
+	}
+
+	request := &model.GetUserRequest{
+		ID: authUserID,
+	}
+
+	response, err := c.UserService.Current(ctx, request)
+	if err != nil {
+		util.HandleApiError(ctx, err, "Failed to get current user: %+v", c.Log)
 		return
 	}
 

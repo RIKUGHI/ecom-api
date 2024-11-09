@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rikughi/ecom-api/internal/delivery/http/controller"
+	"github.com/rikughi/ecom-api/internal/delivery/http/middleware"
 	"github.com/rikughi/ecom-api/internal/delivery/http/router"
 	"github.com/rikughi/ecom-api/internal/repository"
 	"github.com/rikughi/ecom-api/internal/service"
@@ -29,9 +30,13 @@ func Bootstrap(app *App) {
 	// setup controller
 	userController := controller.NewUserController(app.Log, userService)
 
+	// setup middleware
+	authMiddleware := middleware.NewAuth(app.Log)
+
 	router := router.Router{
 		App:            app.App,
 		UserController: userController,
+		AuthMiddleware: authMiddleware,
 	}
 
 	router.Setup()

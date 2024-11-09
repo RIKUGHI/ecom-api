@@ -21,4 +21,5 @@ var (
 	ErrCreateUser     = &ApiError{Err: errors.New("Failed to create user in database"), Code: http.StatusInternalServerError}
 	ErrUserNotFound   = &ApiError{Err: errors.New("User not found"), Code: http.StatusNotFound}
 	ErrUnauthorized   = &ApiError{Err: errors.New("Unauthorized"), Code: http.StatusUnauthorized}
+	ErrInvalidCreds   = &ApiError{Err: errors.New("Invalid credentials"), Code: http.StatusUnauthorized}
 )
