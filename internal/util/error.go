@@ -22,4 +22,7 @@ var (
 	ErrUserNotFound   = &ApiError{Err: errors.New("User not found"), Code: http.StatusNotFound}
 	ErrUnauthorized   = &ApiError{Err: errors.New("Unauthorized"), Code: http.StatusUnauthorized}
 	ErrInvalidCreds   = &ApiError{Err: errors.New("Invalid credentials"), Code: http.StatusUnauthorized}
+
+	ErrCreateProduct   = &ApiError{Err: errors.New("Failed to create product in database"), Code: http.StatusInternalServerError}
+	ErrProductNotFound = &ApiError{Err: errors.New("Product not found"), Code: http.StatusNotFound}
 )

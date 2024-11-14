@@ -23,20 +23,24 @@ type App struct {
 func Bootstrap(app *App) {
 	// setup repository
 	userRepository := repository.NewUserRepository()
+	productRepository := repository.NewProductRepository()
 
 	// setup servie
 	userService := service.NewUserService(app.DB, app.Log, userRepository)
+	productService := service.NewProductService(app.DB, app.Log, productRepository)
 
 	// setup controller
 	userController := controller.NewUserController(app.Log, userService)
+	productController := controller.NewProductController(app.Log, productService)
 
 	// setup middleware
 	authMiddleware := middleware.NewAuth(app.Log)
 
 	router := router.Router{
-		App:            app.App,
-		UserController: userController,
-		AuthMiddleware: authMiddleware,
+		App:               app.App,
+		UserController:    userController,
+		ProductController: productController,
+		AuthMiddleware:    authMiddleware,
 	}
 
 	router.Setup()

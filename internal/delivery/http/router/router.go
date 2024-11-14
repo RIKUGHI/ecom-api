@@ -6,9 +6,10 @@ import (
 )
 
 type Router struct {
-	App            *gin.Engine
-	UserController *controller.UserController
-	AuthMiddleware gin.HandlerFunc
+	App               *gin.Engine
+	UserController    *controller.UserController
+	ProductController *controller.ProductController
+	AuthMiddleware    gin.HandlerFunc
 }
 
 func (r *Router) Setup() {
@@ -21,6 +22,11 @@ func (r *Router) Setup() {
 	r.App.POST("/api/users", r.UserController.Register)
 	r.App.POST("/api/users/_login", r.UserController.Login)
 
+	r.App.GET("/api/products", r.ProductController.List)
+	r.App.GET("/api/products/:id", r.ProductController.Get)
+
 	r.App.Use(r.AuthMiddleware)
 	r.App.GET("/api/users/_current", r.UserController.Current)
+
+	r.App.POST("/api/products", r.ProductController.Create)
 }
