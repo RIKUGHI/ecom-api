@@ -9,6 +9,7 @@ type Router struct {
 	App               *gin.Engine
 	UserController    *controller.UserController
 	ProductController *controller.ProductController
+	CartController    *controller.CartController
 	AuthMiddleware    gin.HandlerFunc
 }
 
@@ -29,4 +30,6 @@ func (r *Router) Setup() {
 	r.App.GET("/api/users/_current", r.UserController.Current)
 
 	r.App.POST("/api/products", r.ProductController.Create)
+
+	r.App.POST("/api/checkout", r.CartController.Checkout)
 }

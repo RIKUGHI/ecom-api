@@ -25,4 +25,8 @@ var (
 
 	ErrCreateProduct   = &ApiError{Err: errors.New("Failed to create product in database"), Code: http.StatusInternalServerError}
 	ErrProductNotFound = &ApiError{Err: errors.New("Product not found"), Code: http.StatusNotFound}
+
+	ErrCreateOrder     = &ApiError{Err: errors.New("Failed to create order in database"), Code: http.StatusInternalServerError}
+	ErrUpdateOrder     = &ApiError{Err: errors.New("Failed to update order in database"), Code: http.StatusInternalServerError}
+	ErrCreateOrderItem = &ApiError{Err: errors.New("Failed to create order item in database"), Code: http.StatusInternalServerError}
 )
